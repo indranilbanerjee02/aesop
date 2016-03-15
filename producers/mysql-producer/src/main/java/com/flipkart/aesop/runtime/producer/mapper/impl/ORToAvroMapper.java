@@ -22,6 +22,7 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.apache.avro.Schema;
 import org.trpr.platform.core.impl.logging.LogFactory;
 import org.trpr.platform.core.spi.logging.Logger;
 
@@ -64,7 +65,7 @@ public class ORToAvroMapper {
 	 * @return returns the column of avro type
 	 * @throws DatabusException Generic databus exception
 	 */
-	public  Object orToAvroType(Column column) throws DatabusException{
+	public  Object orToAvroType(Column column, Schema targetSchema) throws DatabusException{
 		if (column instanceof BitColumn){
 			// This is in  byte order
 			BitColumn byteColumn = (BitColumn) column;
@@ -114,7 +115,19 @@ public class ORToAvroMapper {
 			return shortColumn.getValue();
 		}else if (column instanceof StringColumn){
 			StringColumn stringColumn = (StringColumn) column;
-			return new String(stringColumn.getValue(), Charset.defaultCharset());
+			if(targetSchema.getType() == Schema.Type.UNION) {
+				for (Schema childTargetSchema : targetSchema.getTypes()) {
+					if (childTargetSchema.getType() == Schema.Type.STRING) {
+						// union with atleast one string column
+						return new String(stringColumn.getValue(), Charset.defaultCharset());
+					}
+				}
+			} else if(targetSchema.getType() == Schema.Type.STRING) {
+				// single string field
+				return new String(stringColumn.getValue(), Charset.defaultCharset());
+			}
+			//return byte[] as is
+			return ByteBuffer.wrap(stringColumn.getValue());
 		}else if (column instanceof TimeColumn){
 			TimeColumn timeColumn = (TimeColumn) column;
 			Time time = timeColumn.getValue();
