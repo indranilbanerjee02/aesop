@@ -98,7 +98,7 @@ public class DefaultBinLogEventMapper<T extends GenericRecord> implements BinLog
 			for (Schema.Field field : orderedFields)
 			{
 				Column column = columns.get(cnt);
-				record.put(field.name(), column == null ? null : orToAvroMapper.orToAvroType(column));
+				record.put(field.name(), column == null ? null : orToAvroMapper.orToAvroType(column, field.schema()));
 				cnt++;
 			}
 			LOGGER.info("Mapped GenricRecord for schema " + schema.getName() + " : " + record.toString());

@@ -46,7 +46,7 @@ public class AvroToMysqlMapper
 			        || mysqlType == MysqlDataTypes.TINYBLOB || mysqlType == MysqlDataTypes.MEDIUMBLOB
 			        || mysqlType == MysqlDataTypes.LONGBLOB || mysqlType == MysqlDataTypes.TINYTEXT
 			        || mysqlType == MysqlDataTypes.MEDIUMTEXT || mysqlType == MysqlDataTypes.LONGTEXT
-			        || mysqlType == MysqlDataTypes.TEXT)
+			        || mysqlType == MysqlDataTypes.TEXT || mysqlType == MysqlDataTypes.BINARY)
 			{
 				return new String(((java.nio.ByteBuffer) value).array());
 			}
